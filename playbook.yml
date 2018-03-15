@@ -1,0 +1,47 @@
+---
+- hosts: all
+
+  tasks:
+
+    - name: "Update Packages"
+      become: yes
+      apt:
+        update_cache: yes
+        upgrade: yes
+        cache_valid_time: 259200
+        autoremove: yes
+
+    - name: "Install JDK"
+      become: yes
+      apt: 
+        name: oracle-java8-jdk
+
+- hosts: brokers
+
+  vars:
+    scala_version: 2.12
+    kafka_version: 1.0.0
+    kafka_archive: kafka_{{scala_version}}-{{kafka_version}}.tgz
+
+  tasks:
+
+    - name: "Download & Unpack Kafka"
+      unarchive:
+        remote_src: yes
+        src: "http://mirror.dsrg.utoronto.ca/apache/kafka/{{kafka_version}}/{{kafka_archive}}"
+        dest: ~/
+        creates: ~/kafka_2.12-1.0.0/bin
+
+- hosts: zookeepers
+
+  vars:
+    zookeeper_version: 3.4.11
+
+  tasks:
+
+    - name: "Download & Unpack Zookeeper"
+      unarchive:
+        remote_src: yes
+        src: "http://mirror.dsrg.utoronto.ca/apache/zookeeper/zookeeper-{{zookeeper_version}}/zookeeper-{{zookeeper_version}}.tar.gz"
+        dest: ~/
+        creates: ~/zookeeper-3.4.11/bin
