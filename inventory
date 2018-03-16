@@ -1,10 +1,16 @@
+[all]
+192.168.0.34 hostname=ultron
+
 [all:vars]
 ansible_connection=ssh 
 ansible_ssh_user=pi 
 ansible_ssh_pass=raspberry
+zookeeper_version=3.4.11
+scala_version=2.12
+kafka_version=1.0.0
 
 [zookeepers]
-192.168.0.34
+192.168.0.34 zookeeper_id=1
 
 [brokers]
 192.168.0.34
