@@ -13,4 +13,4 @@ kafka_version=1.0.0
 192.168.0.34 zookeeper_id=1
 
 [brokers]
-192.168.0.34
+192.168.0.34 broker_id=1

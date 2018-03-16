@@ -1,0 +1,3 @@
+#JMX_PORT=9999
+KAFKA_HEAP_OPTS="-Xmx256M -Xms128M"
+KAFKA_JVM_PERFORMANCE_OPTS="-client -XX:+UseParNewGC -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSScavengeBeforeRemark -XX:+DisableExplicitGC -Djava.awt.headless=true"
