@@ -32,6 +32,15 @@
       apt: 
         name: oracle-java8-jdk
 
+    - name: "Download nodejs Installer"
+      get_url:
+        remote_src: yes
+        url: "https://deb.nodesource.com/setup"
+        dest: ~/nodejs-setup.sh
+
+    - name: "Install nodejs"
+      script: ~/nodejs-setup.sh
+
 - hosts: zookeepers
 
   vars:

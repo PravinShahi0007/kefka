@@ -1,0 +1,13 @@
+syntax = "proto3";
+package app.events;
+
+
+message ManualSignup {
+
+    string id = 1;
+    string email = 2;
+    string password = 3;
+    string firstName = 4;
+    string lastName = 5;
+    string alias = 6;
+}

@@ -22,15 +22,6 @@ class KafkaServiceProvider extends ServiceProvider
             $producerConfigurationData = config("kafka.producer");
             $config = new Conf();
             $config->set('debug','all');
-//            $config->setStatsCb(function ($stuff, $stuffs) {
-//                dd($stuff, $stuffs);
-//            });
-//            $config->setDrMsgCb(function ($stuff, $stuffs) {
-//                dd($stuff, $stuffs);
-//            });
-//            $config->setErrorCb(function ($stuff, $stuffs) {
-//                dd($stuff, $stuffs);
-//            });
 
             foreach ($producerConfigurationData['config'] as $key => $value) {
                 $config->set($key, $value);

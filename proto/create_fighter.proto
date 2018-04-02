@@ -1,0 +1,9 @@
+syntax = "proto3";
+package app.events;
+
+
+message CreateFighter {
+
+    string name = 1;
+    string ownerId = 2;
+}
