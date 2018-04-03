@@ -1,6 +1,7 @@
 <?php namespace App\Console\Commands;
 
 use App\Events\ManualSignup;
+use App\Streams\Circumstance;
 use App\Streams\DomainEvent;
 use Aws\Kinesis\KinesisClient;
 use Google\Protobuf\Any;
@@ -42,12 +43,6 @@ class Test extends Command
      */
     public function handle(Hasher $hasher)
     {
-        $kinesis = new KinesisClient([
-            'region' => 'local',
-            'version' => '2013-12-02',
-            'endpoint' => 'http://localhost:4567',
-        ]);
-
         $manualSignup = new ManualSignup();
         $manualSignup->setId(Uuid::uuid4()->toString());
         $manualSignup->setEmail('atrauzzi@gmail.com');
@@ -65,10 +60,27 @@ class Test extends Command
 
         $domainEvent = new DomainEvent();
         $domainEvent->setReceived($timestamp);
-        $domainEvent->setRelay('manual:alex');
+        $domainEvent->setRelay('alex');
         $domainEvent->setEvent($any);
+        $domainEvent->setCircumstance(Circumstance::MANUAL);
 
-        dd($domainEvent->serializeToString());
-        dd($domainEvent->serializeToJsonString());
+        //dump($domainEvent->serializeToString());
+        dump($domainEvent->serializeToJsonString());
+
+        $kinesis = new KinesisClient([
+            'region' => 'local',
+            'version' => '2013-12-02',
+            'endpoint' => 'http://localhost:4567',
+            'credentials' => [
+                'key' => 'local',
+                'secret' => 'local',
+            ],
+        ]);
+
+        $kinesis->putRecord([
+            'StreamName' => 'identity',
+            'Data' => $domainEvent->serializeToString(),
+            'PartitionKey' => $manualSignup->getId(),
+        ]);
     }
 }

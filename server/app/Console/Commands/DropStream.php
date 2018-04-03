@@ -43,6 +43,10 @@ class DropStream extends Command
             'region' => 'local',
             'version' => '2013-12-02',
             'endpoint' => 'http://localhost:4567',
+            'credentials' => [
+                'key' => 'local',
+                'secret' => 'local',
+            ],
         ]);
 
         $kinesis->deleteStream([

@@ -5,9 +5,17 @@ import "google/protobuf/any.proto";
 import "google/protobuf/timestamp.proto";
 
 
+enum Circumstance {
+    UNKNOWN = 0;
+    REGULAR_OPERATION = 1;
+    BATCH = 2;
+    MANUAL = 3;
+}
+
 message DomainEvent {
 
     google.protobuf.Any event = 1;
     google.protobuf.Timestamp received = 2;
     string relay = 3;
+    Circumstance circumstance = 4;
 }
