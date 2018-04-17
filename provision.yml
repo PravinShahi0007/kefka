@@ -1,6 +1,12 @@
 ---
 - hosts: all
 
+  vars:
+    kafka_archive: kafka_{{scala_version}}-{{kafka_version}}.tgz
+    kafka_home: ~/kafka_{{scala_version}}-{{kafka_version}}
+    kafka_data: "{{ data_dir }}/kafka"
+    log4j_config: "~/log4j.properties"
+
   tasks:
 
     - name: Dump Metadata
@@ -32,36 +38,37 @@
       apt: 
         name: oracle-java8-jdk
 
-    - name: "Download nodejs Installer"
-      get_url:
+    - name: "Download & Unpack Kafka"
+      unarchive:
         remote_src: yes
-        url: "https://deb.nodesource.com/setup"
-        dest: ~/nodejs-setup.sh
+        src: "http://mirror.dsrg.utoronto.ca/apache/kafka/{{kafka_version}}/{{kafka_archive}}"
+        dest: ~/
+        creates: ~/kafka_{{scala_version}}-{{kafka_version}}/bin
 
-    - name: "Install nodejs"
-      script: ~/nodejs-setup.sh
+    - name: "Add log4j Configuration"
+      template:
+        src: ./resources/log4j.properties
+        dest: "{{ log4j_config }}"
 
 - hosts: zookeepers
 
   vars:
-    zookeeper_archive: zookeeper-{{ zookeeper_version }}.tar.gz
-    zookeeper_home: ~/zookeeper-{{ zookeeper_version }}
-    zookeeper_config: "{{ zookeeper_home }}/conf/zoo.cfg"
-    zookeeper_data: "{{ zookeeper_home }}/var"
+    kafka_home: ~/kafka_{{scala_version}}-{{kafka_version}}
+    zookeeper_config: "~/zookeeper.properties"
+    zookeeper_data: "{{ data_dir }}/zookeeper"
 
   tasks:
 
-    - name: "Download & Unpack Zookeeper"
-      unarchive:
-        remote_src: yes
-        src: "http://mirror.dsrg.utoronto.ca/apache/zookeeper/zookeeper-{{ zookeeper_version }}/{{ zookeeper_archive }}"
-        dest: ~/
-        creates: "{{ zookeeper_home }}/bin"
+    - name: "Configure Zookeeper Service"
+      become: true
+      template:
+        src: ./resources/zookeeper.service
+        dest: /etc/systemd/system/zookeeper.service
 
     - name: "Add Zookeeper Configuration"
       template:
-        src: ./resources/zoo.cfg
-        dest: "{{ zookeeper_home }}/conf"
+        src: ./resources/zookeeper.properties
+        dest: "{{ zookeeper_config }}"
 
     - name: "Set Zookeeper Configuration Hosts"
       with_items:
@@ -81,28 +88,24 @@
   vars:
     kafka_archive: kafka_{{scala_version}}-{{kafka_version}}.tgz
     kafka_home: ~/kafka_{{scala_version}}-{{kafka_version}}
-    kafka_config: "{{ kafka_home }}/config/server.properties"
-    kafka_data: "{{ kafka_home }}/var"
+    kafka_config: "~/server.properties"
+    kafka_data: "{{ data_dir }}/kafka"
 
   tasks:
 
-    - name: "Download & Unpack Kafka"
-      unarchive:
-        remote_src: yes
-        src: "http://mirror.dsrg.utoronto.ca/apache/kafka/{{kafka_version}}/{{kafka_archive}}"
-        dest: ~/
-        creates: ~/kafka_{{scala_version}}-{{kafka_version}}/bin
+    - name: "Configure Kafka Service"
+      become: true
+      template:
+        src: ./resources/kafka.service
+        dest: /etc/systemd/system/kafka.service
 
     - name: "Add Kafka Configuration"
       template:
         src: ./resources/server.properties
-        dest: "{{ kafka_home }}/config"
+        dest: "{{ kafka_config }}"
 
     - name: "Add JVM Environment Variables"
       become: yes
-      lineinfile:
-        path: /etc/environment
-        line: "{{ lookup('file', './resources/environment') }}"
-
-    # - name:
-    
+      template:
+        src: ./resources/environment
+        dest: /etc/environment

@@ -67,20 +67,6 @@ class Test extends Command
         //dump($domainEvent->serializeToString());
         dump($domainEvent->serializeToJsonString());
 
-        $kinesis = new KinesisClient([
-            'region' => 'local',
-            'version' => '2013-12-02',
-            'endpoint' => 'http://localhost:4567',
-            'credentials' => [
-                'key' => 'local',
-                'secret' => 'local',
-            ],
-        ]);
 
-        $kinesis->putRecord([
-            'StreamName' => 'identity',
-            'Data' => $domainEvent->serializeToString(),
-            'PartitionKey' => $manualSignup->getId(),
-        ]);
     }
 }

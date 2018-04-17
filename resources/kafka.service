@@ -1,0 +1,17 @@
+[Unit]
+Description=Apache Kafka
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/kafka.pid
+User=pi
+Group=pi
+ExecStart=/home/pi/kafka_{{scala_version}}-{{kafka_version}}/bin/kafka-server-start.sh /home/pi/server.properties
+ExecStop=/home/pi/kafka_{{scala_version}}-{{kafka_version}}/bin/kafka-server-stop.sh
+Restart=on-failure
+SyslogIdentifier=kafka
+
+[Install]
+WantedBy=multi-user.target
